@@ -2,16 +2,11 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-
-struct Reference {
-	char book[20];
-	int numbers[5];
-	int numbersX;
-};
+#include "reference.h"
 
 int isSeperator(char input) {
-	char seperators[6] = "_*&^%$#@!~`[]}{)(-.,/= ";
-	for (size_t c = 0; c < 6; c++) {
+	char *seperators = "_*&^%$#@!~`[]}{)(-.,/= ";
+	for (size_t c = 0; c < strlen(seperators); c++) {
 		if (seperators[c] == input) {
 			return 1;
 		}
@@ -20,7 +15,7 @@ int isSeperator(char input) {
 	return -1;
 }
 
-int parseReference(int *error, char *string, struct Reference *ref) {
+void parseReference(int *error, char *string, struct Reference *ref) {
 	// Make a 2D array for parsing
 	char read[10][5];
 	int readX = 0;
