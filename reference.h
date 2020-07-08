@@ -4,7 +4,6 @@ struct Reference {
 		int type;
 		int n[5];
 	}numbers[5];
-	
 	int numbersX;
 	int numbersY;
 };

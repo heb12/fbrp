@@ -6,7 +6,7 @@
 int main() {
 	int *error;
 	struct Reference ref;
-	parseReference(error, "1 John 3 16 17", &ref);
+	parseReference(error, "John 3 16-17", &ref);
 	
 	printf("%s\n", ref.book);
 	printf("%d %d\n", ref.numbers[0].n[0], ref.numbers[0].n[1]);

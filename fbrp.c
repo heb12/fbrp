@@ -52,18 +52,17 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 	int lastType = 0;
 	for (int c = 0; c < length; c++) {
 		// First, detect the type.
-		int detect = 0;
-		if (isdigit(string[c])) {
-			detect = 1;
-		} else if (isalpha(string[c])) {
-			detect = 2;
+		int detect = determineType(string[c]);
+		if (detect == 3 || detect == 4) {
+			//detect = 0;
 		}
+		
 		
 		// Check if the last stored type is different
 		// than new detected type, then make sure we aren't on the
 		// first part, and lastly check if we are on the last char,
 		// append the last if so.
-		if ((c == length - 1 || lastType != detect) && c != 0) {
+		if ((c == length - 1 || lastType != determineType(string[c])) && c != 0) {
 			if (c == length - 1) {
 				read[readY][readX] = string[c];
 				readX++;
