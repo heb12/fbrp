@@ -1,5 +1,7 @@
+#define BOOK_LENGTH 20
+
 struct Reference {
-	char book[20];
+	char book[BOOK_LENGTH];
 	struct Numbers {
 		int type;
 		int n[5];

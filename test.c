@@ -9,8 +9,8 @@ void debugPrint(struct Reference ref) {
 
 int main() {
 	int *error;
-	struct Reference test;
-	parseReference(error, "1 John 3 16-17", &ref);
+	struct Reference ref;
+	parseReference(error, "John 3 5-6", &ref);
 
 	/*
 	For a quick recap of how the parsed

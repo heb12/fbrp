@@ -4,12 +4,19 @@
 #include <ctype.h>
 #include "reference.h"
 
+// Struct for the reference reader
+struct Read {
+	char text[10];
+	int length;
+	int type;
+};
+
 /*
 For a quick "types" reference:
 0 - Default
 1 - Digit (2)
 2 - Alpha (d)
-3 - Seperator (. ,)
+3 - Seperator (. _)
 4 - Range (-)
 */
 
@@ -40,13 +47,9 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 	int length = strlen(string);
 
 	// Make a 2D array for parsing
-	char read[10][10];
+	struct Read read[10];
 	int readX = 0;
 	int readY = 0;
-
-	// Length array for extra safety
-	int lengths[10];
-	int lengthsX = 0;
 
 	// First, filter out the string using a
 	// "waiting" technique.
@@ -55,36 +58,44 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 		// First, detect the type.
 		int detect = determineType(string[c]);
 
-		// 1: Break if we are on last char
-		if ((c == length - 1 || lastType != determineType(string[c])) && c != 0) {
-			// Once we are on the last character, append it
-			// and use the last next few lines to null terminate the string
-			// and set the length for looping.
-			if (c == length - 1) {
-				read[readY][readX] = string[c];
-				readX++;
-			}
+		// Check if last type is different than this type.
+		// Also, don't do it on first char or on seperators.
+		if (detect != lastType && c != 0 && lastType != 3) {
+			read[readY].text[readX] = '\0';
+			//printf("\"%s%s\n", read[readY].text, "\"");
 
-			read[readY][readX] = '\0';
-			printf("\"%s%s\n", read[readY], "\"");
+			// Set line lengths for safety
+			read[readY].length = readX;
+			read[readY].type = lastType;
 
-			lengths[lengthsX] = readX;
-			lengthsX++;
 			readY++;
-
-			// Once we did that, quit to next (break the loop)
-			if (c == length - 1) {
-				continue;
-			}
-
 			readX = 0;
 		}
 
-		read[readY][readX] = string[c];
-		readX++;
+		// Don't add seperators when appending char
+		if (detect != 3) {
+			read[readY].text[readX] = string[c];
+			readX++;
+		}
+
+		// You can probably see where I repeated myself.
+		// Maybe I can find a solution in the future, but this
+		// can do for now.
+		if (c == length - 1) {
+			read[readY].type = detect;
+			read[readY].text[readX] = '\0';
+			//printf("\"%s%s\n", read[readY].text, "\"");
+		}
 
 		lastType = detect;
 	}
+
+	// Lines to read are based on lines that were just added.
+	// Add 1 to be exact with the last added one
+	readY++;
+
+	// After this step, the array now looks like:
+	// "John 3 16-20" > ["John", "3", "16", "-", "17"]
 
 	// Customizable logic to fit
 	// the most common reference usages
@@ -97,34 +108,43 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 	int appendNext = 0;
 
 	ref->numbersY = 0;
-	int bookStarted = 0;
+	ref->numbersX = 0;
+	int bookEnded = 0;
+	memset(ref->book, '\0', BOOK_LENGTH);
 	for (int y = 0; y < readY; y++) {
-		// Determine the type of the current part,
-		// only checking the first line.
-		if (determineType(read[y][0]) == 3) {
-			continue;
-		}
-
+		// Try to parse what could be string, int, or both.
 		char *temp;
-		int result = strtol(read[y], &temp, 10);
+		int result = -1;
+		result = strtol(read[y].text, &temp, 10);
 
 		// TODO: Clean up this logic
-		if (bookStarted == 0) {
-			strcat(ref->book, read[y]);
+		if (bookEnded == 0) {
+			strcat(ref->book, read[y].text);
 			if (*temp == '\0') {
-				printf("%s\n","Detected int, assuming part of book");
+				//printf("%s\n","Detected int, assuming part of book");
 			} else {
-				printf("%s%s%s\n", "Detected string, assuming book is: \"", ref->book, "\"");
-				bookStarted = 1;
+				//printf("%s%s%s\n", "Detected string, assuming book is: \"", ref->book, "\"");
+				bookEnded = 1;
 			}
-		} else if (bookStarted == 1) {
-			printf("%s%d\n", "Appending number ", result);
+		} else if (bookEnded == 1) {
+			// Type for this
+			int thisType = 0;
+			thisType = determineType(read[y].text[0]);
 
-			// Check the type of the next part
-			// Again, only the first character
-			int nextType = 0;
-			if (readY != y + 1) {
-				nextType = determineType(read[y + 1][0]);
+			// If the int parsing didn't work (read[y] is same as letters left out),
+			// assume it is a multiword book. (Song of Solomon). Only do this when
+			// the type is not a seperator.
+			if (read[y].type != 4) {
+				if (!strcmp(temp, read[y].text)) {
+					//printf("%s\n", "Found extra non-int part, assuming part of book");
+
+					// Put an extra space before it, just in case. (Song of Solomon)
+					strcat(ref->book, " ");
+					strcat(ref->book, read[y].text);
+					continue;
+				}
+
+				//printf("%s%d\n", "Appending number ", result);
 			}
 
 			// Range/multiple logic. Range/multiples
@@ -132,27 +152,26 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			// [16, 17, 0, 0, 0] = 16-17
 			// [16, 20, 11, 0, 0] = 16, 20, 11
 			// Also, the type is stored in this struct.
-			if (nextType == 4) {
-				ref->numbers[ref->numbersY].type = nextType;
-				ref->numbers[ref->numbersY].n[0] = result;
-				appendNext = 1;
 
-				// Skip the loop 1, so we can ignore the dash
-				// (Assuming is 1 character)
-				y++;
-			} else {
-				if (appendNext == 1) {
-					ref->numbers[ref->numbersY].n[1] = result;
-					appendNext = 0;
-				} else {
-					ref->numbers[ref->numbersY].n[0] = result;
-					ref->numbers[ref->numbersY].n[1] = result;
-					ref->numbersY++;
-				}
+			// When we are at a range symbol, back up, (ref->numbersY--)
+			// and set the next part on the last Y.
+			if (read[y].type == 4) {
+				ref->numbersY--;
+				ref->numbers[ref->numbersY].type = read[y].type;
+				ref->numbersX++;
+				continue;
 			}
 
+			ref->numbers[ref->numbersY].n[ref->numbersX] = result;
+
+			// Add based on
+			if (ref->numbersX != 0) {
+				ref->numbersX = 0;
+			} else {
+				ref->numbersY++;
+			}
 		}
 	}
 
-	printf("%s\n", "Finished parsing");
+	//printf("%s\n", "Finished parsing");
 }
