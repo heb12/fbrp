@@ -1,6 +1,9 @@
-## FBRP
-"Flexible Bible Reference Parser"  
-Written in C from the ground up. No regex used.  
+# FBREP
+"Flexible Bible REference Parser"
+## Features
+* Pure C99
+* No Regex
+* Small and fast
 
 ### Can Parse:
 "John 3 16"  
@@ -8,6 +11,7 @@ Written in C from the ground up. No regex used.
 "1 John 3 v16"  
 
 ### Cannot Parse:
+By design, it cannot parse references like:
 "John 3 16, John 3 17"  
 "John 3, Hebrews 4"  
 
