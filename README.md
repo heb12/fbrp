@@ -11,7 +11,7 @@
 "1 John 3 v16"  
 
 ### Cannot Parse:
-By design, it cannot parse references like:
+By design, it cannot parse references like:  
 "John 3 16, John 3 17"  
 "John 3, Hebrews 4"  
 
