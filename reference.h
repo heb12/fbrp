@@ -2,11 +2,16 @@
 
 struct Reference {
 	char book[BOOK_LENGTH];
-	struct Numbers {
+	struct Chapter {
 		int type;
-		int n[5];
+		int r[2];
 		int length;
-	}numbers[5];
-	int numbersX; // Not used right now
-	int numbersY;
+	}chapter[5];
+	struct Verse {
+		int type;
+		int r[2];
+		int length;
+	}verse[5];
+	int chapterX; // Not used right now
+	int verseX;
 };

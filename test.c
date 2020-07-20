@@ -3,28 +3,21 @@
 #include "reference.h"
 #include "fbrp.h"
 
-void debugPrint(struct Reference ref) {
+void debugPrint(struct Reference *ref) {
+	printf("Book: %s\n", ref->book);
 
+	for (int c = 0; c < ref->chapterX; c++) {
+		printf("Chapter: %d-%d\n", ref->chapter[c].r[0], ref->chapter[c].r[1]);
+	}
+
+	for (int c = 0; c < ref->verseX; c++) {
+		printf("Verse: %d-%d\n", ref->verse[c].r[0], ref->verse[c].r[1]);
+	}
 }
 
 int main() {
 	int *error;
 	struct Reference ref;
-	parseReference(error, "John 3 5-6", &ref);
-
-	/*
-	For a quick recap of how the parsed
-	verse structure is stored:
-	"1John"
-
-	Digit
-	3, 0
-
-	Range
-	16, 17
-	*/
-
-	printf("%s\n", ref.book);
-	printf("%d %d\n", ref.numbers[0].n[0], ref.numbers[0].n[1]);
-	printf("%d %d\n", ref.numbers[1].n[0], ref.numbers[1].n[1]);
+	parseReference(error, "2 Kings 1, 3-5:2-4, 3-6, 1-2", &ref);
+	debugPrint(&ref);
 }
