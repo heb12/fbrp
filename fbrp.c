@@ -12,30 +12,30 @@ struct Read {
 };
 
 enum TYPES {
-    DEFAULT=0,
-    DIGIT=1,
-    ALPHA=2,
-    SEPERATOR=3,
-    RANGE=4,
-    MULTIPLE=5
+	DEFAULT=0,
+	DIGIT=1,
+	ALPHA=2,
+	SEPERATOR=3,
+	RANGE=4,
+	MULTIPLE=5
 };
 
 // Custom STRTOL like function
 int strspt(char *string, char *result, int limit) {
-    int integer = 0;
-    int resultC = 0;
-    for (int c = 0; c < limit; c++) {
-        if (isdigit(string[c])) {
-            integer = integer * 10;
-            integer += string[c] - '0';
-        } else {
-            result[resultC] = string[c];
-            resultC++;
-        }
-    }
+	int integer = 0;
+	int resultC = 0;
+	for (int c = 0; c < limit; c++) {
+		if (isdigit(string[c])) {
+			integer = integer * 10;
+			integer += string[c] - '0';
+		} else {
+			result[resultC] = string[c];
+			resultC++;
+		}
+	}
 
-    result[resultC] = '\0';
-    return integer;
+	result[resultC] = '\0';
+	return integer;
 }
 
 // Test type of a char
@@ -104,7 +104,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			continue;
 		}
 		
-      	// Jump to next part in read
+	  	// Jump to next part in read
 		if (type != lastType && c != 0) {
 			read[readY].text[readX] = '\0';
 			read[readY].type = partType;
