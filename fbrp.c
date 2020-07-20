@@ -11,17 +11,16 @@ struct Read {
 	int type;
 };
 
-/*
-For a quick "types" reference:
-0 - Default
-1 - Digit (2)
-2 - Alpha (d)
-3 - Seperator (. _)
-4 - Range (-)
-5 - Multiple (,)
-*/
+enum TYPES {
+    DEFAULT=0,
+    DIGIT=1,
+    ALPHA=2,
+    SEPERATOR=3,
+    RANGE=4,
+    MULTIPLE=5
+};
 
-// Replacement for strtol.. Muhahah!
+// Custom STRTOL like function
 int strspt(char *string, char *result, int limit) {
     int integer = 0;
     int resultC = 0;
@@ -42,27 +41,27 @@ int strspt(char *string, char *result, int limit) {
 // Test type of a char
 int determineType(char input) {
 	if (isdigit(input)) {
-		return 1;
+		return DIGIT;
 	} else if (isalpha(input)) {
-		return 2;
+		return ALPHA;
 	}
 
 	// Test seperator
 	char *seperators = "_ :./";
 	for (size_t c = 0; c < strlen(seperators); c++) {
-		if (seperators[c] == input) {return 3;}
+		if (seperators[c] == input) {return SEPERATOR;}
 	}
 
 	// Test range
 	char *range = "-";
 	for (size_t c = 0; c < strlen(range); c++) {
-		if (range[c] == input) {return 4;}
+		if (range[c] == input) {return RANGE;}
 	}
 
 	// Test multiple
 	char *multiple = ",";
 	for (size_t c = 0; c < strlen(multiple); c++) {
-		if (multiple[c] == input) {return 5;}
+		if (multiple[c] == input) {return MULTIPLE;}
 	}
 
 	return 0;
@@ -83,8 +82,8 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 
 // Main parsing function. Ex:
 // int *error;
-//struct Reference ref;
-//parseReference(error, "1 John 3 16-17, 20, 17-18", &ref)
+// struct Reference ref;
+// parseReference(error, "1 John 3 16-17, 20, 17-18", &ref)
 void parseReference(int *error, char *string, struct Reference *ref) {
 	int length = strlen(string);
 
@@ -100,11 +99,12 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 		int type = determineType(string[c]);
 
 		// Skip seperator, but set lastType
-		if (type == 3) {
+		if (type == SEPERATOR) {
 			lastType = type;
 			continue;
 		}
-
+		
+      	//
 		if (type != lastType && c != 0) {
 			read[readY].text[readX] = '\0';
 			read[readY].type = partType;
@@ -142,7 +142,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 	int jumping = 0;
 	for (size_t p = 0; p < readY; p++) {
 		// Skip range/multiple chars
-		if (read[p].type == 4 || read[p].type == 5) {
+		if (read[p].type == RANGE || read[p].type == MULTIPLE) {
 			continue;
 		}
 
@@ -184,8 +184,8 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			setInt(ref, 1, currentlyOn, tryInt, 1);
 			jumping = 0;
 
-			// Error here
-			if (nextType == 5) {
+			// Multiples after range
+			if (nextType == MULTIPLE) {
 				jumping = 2;
 				continue;
 			} else {
@@ -197,12 +197,12 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 		}
 
 		// Check for the next type (range, multiple)
-		if (nextType == 4) {
+		if (nextType == RANGE) {
 			setInt(ref, 0, currentlyOn, tryInt, 0);
 
 			jumping = 1;
 			continue;
-		} else if (nextType == 5) {
+		} else if (nextType == MULTIPLE) {
 			setInt(ref, 0, currentlyOn, tryInt, 0);
 			setInt(ref, 1, currentlyOn, tryInt, 1);
 
