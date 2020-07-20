@@ -104,7 +104,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			continue;
 		}
 		
-      	//
+      	// Jump to next part in read
 		if (type != lastType && c != 0) {
 			read[readY].text[readX] = '\0';
 			read[readY].type = partType;
@@ -161,7 +161,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			currentlyOn = 1;
 		}
 
-		// if book and str undefined and p == 0 then assume part of book
+		// if book and str undefined and p == 0 then assume part of book (Ex: [3] John)
 		if (currentlyOn == 0 && *tryString == '\0' && p == 0) {
 			strcat(ref->book, read[p].text);
 			continue;
@@ -179,7 +179,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			nextType = read[p + 1].type;
 		}
 
-		// When jumping
+		// Handle previous set jumps for range/multiple
 		if (jumping == 1) {
 			setInt(ref, 1, currentlyOn, tryInt, 1);
 			jumping = 0;
