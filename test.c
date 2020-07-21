@@ -18,6 +18,6 @@ void debugPrint(struct Reference *ref) {
 int main() {
 	int *error;
 	struct Reference ref;
-	parseReference(error, "2 Kings 1, 3-5:2-4, 3-6, 1-2", &ref);
+	parseReference(error, "John 3 16", &ref);
 	debugPrint(&ref);
 }
