@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
-#include <reference.h>
+#include "reference.h"
 
 // Struct for the reference reader
 struct Read {
@@ -216,10 +216,6 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			setInt(ref, 1, currentlyOn, tryInt, 1);
 		}
 	}
-
-	// Reduce 1 because it was incremented on the last part.
-	// This is done for accurate measuring.
-	ref->verseX -= 1;
 
 	// Null terminate book
 	strcat(ref->book, "\0");
