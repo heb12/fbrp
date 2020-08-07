@@ -34,7 +34,7 @@ int determineType(char input) {
 		return ALPHA;
 	} else if (testCharString(input, "1234567890")) {
 		return DIGIT;
-	} else if (testCharString(input, "_ :./")) {
+	} else if (testCharString(input, "_ :./\n\0")) {
 		return SEPERATOR;
 	} else if (testCharString(input, "-")) {
 		return RANGE;
@@ -96,6 +96,9 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 		// Skip seperator, but set lastType
 		if (type == SEPERATOR) {
 			lastType = type;
+			// Somewhat dirty solution to add last part
+			// when last char(s) are seperators
+			if (c == length - 1) {readY++;}
 			continue;
 		}
 
@@ -136,6 +139,12 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 	int currentlyOn = 0;
 	int jumping = 0;
 	for (size_t p = 0; p < readY; p++) {
+		// Skip nothing parts (triggered)
+		// if (read[p].length == 0) {
+		// 	continue;
+		// }
+		//printf("-%d-\n", read[p].text[0]);
+
 		// Skip range/multiple chars
 		if (read[p].type == RANGE || read[p].type == MULTIPLE) {
 			continue;

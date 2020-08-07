@@ -18,10 +18,12 @@ void debugPrint(struct Reference *ref) {
 int main() {
 	int *error;
 	struct Reference ref;
-<<<<<<< HEAD
-	parseReference(error, "John 3 16", 9, &ref);
-=======
-	parseReference(error, "John 3 16, 17, 20-25", &ref);
->>>>>>> 4331015cacf5e387336b5836ad1a0698868d80d1
+
+	char input[50];
+	memset(input, 'a', 50);
+	fgets(input, 50, stdin);
+
+	parseReference(error, input, strlen(input), &ref);
+	printf("%d\n", ref.verseLength);
 	debugPrint(&ref);
 }
