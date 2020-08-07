@@ -211,10 +211,13 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 			setInt(ref, 1, currentlyOn, tryInt, 1);
 		}
 	}
+<<<<<<< HEAD
 
 	// Reduce 1 because it was incremented on the last part.
 	// This is done for accurate measuring.
 	//ref->verseLength -= 1;
+=======
+>>>>>>> 4331015cacf5e387336b5836ad1a0698868d80d1
 
 	// Null terminate book
 	strcat(ref->book, "\0");

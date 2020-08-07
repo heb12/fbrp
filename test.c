@@ -18,6 +18,10 @@ void debugPrint(struct Reference *ref) {
 int main() {
 	int *error;
 	struct Reference ref;
+<<<<<<< HEAD
 	parseReference(error, "John 3 16", 9, &ref);
+=======
+	parseReference(error, "John 3 16, 17, 20-25", &ref);
+>>>>>>> 4331015cacf5e387336b5836ad1a0698868d80d1
 	debugPrint(&ref);
 }
