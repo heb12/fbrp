@@ -1,7 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 #include "reference.h"
 
 // Struct for the reference reader
@@ -12,23 +9,52 @@ struct Read {
 };
 
 enum TYPES {
-	DEFAULT=0,
-	DIGIT=1,
-	ALPHA=2,
-	SEPERATOR=3,
-	RANGE=4,
-	MULTIPLE=5
+	DEFAULT = 0,
+	DIGIT = 1,
+	ALPHA = 2,
+	SEPERATOR = 3,
+	RANGE = 4,
+	MULTIPLE = 5
 };
+
+// Test for a char in a string. Ex: 'c' in "cake"
+int testCharString(char test, char seperators[]) {
+	for (size_t c = 0; seperators[c] != '\0'; c++) {
+		if (seperators[c] == test) {
+			return 1;
+		}
+	}
+
+	return 0;
+}
+
+// Test type of a char
+int determineType(char input) {
+	if (testCharString(input, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
+		return ALPHA;
+	} else if (testCharString(input, "1234567890")) {
+		return DIGIT;
+	} else if (testCharString(input, "_ :./")) {
+		return SEPERATOR;
+	} else if (testCharString(input, "-")) {
+		return RANGE;
+	} else if (testCharString(input, ",")) {
+		return MULTIPLE;
+	}
+
+	return -1;
+}
 
 // Custom STRTOL like function
 int strspt(char *string, char *result, int limit) {
 	int integer = 0;
 	int resultC = 0;
 	for (int c = 0; c < limit; c++) {
-		if (isdigit(string[c])) {
+		int charType = determineType(string[c]);
+		if (charType == DIGIT) {
 			integer = integer * 10;
 			integer += string[c] - '0';
-		} else {
+		} else if (charType == ALPHA) {
 			result[resultC] = string[c];
 			resultC++;
 		}
@@ -38,44 +64,15 @@ int strspt(char *string, char *result, int limit) {
 	return integer;
 }
 
-// Test type of a char
-int determineType(char input) {
-	if (isdigit(input)) {
-		return DIGIT;
-	} else if (isalpha(input)) {
-		return ALPHA;
-	}
-
-	// Test seperator
-	char *seperators = "_ :./";
-	for (size_t c = 0; c < strlen(seperators); c++) {
-		if (seperators[c] == input) {return SEPERATOR;}
-	}
-
-	// Test range
-	char *range = "-";
-	for (size_t c = 0; c < strlen(range); c++) {
-		if (range[c] == input) {return RANGE;}
-	}
-
-	// Test multiple
-	char *multiple = ",";
-	for (size_t c = 0; c < strlen(multiple); c++) {
-		if (multiple[c] == input) {return MULTIPLE;}
-	}
-
-	return 0;
-}
-
 // A quick function to set an int to chapter or verse and
 // add 1 to it's counter.
 void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
-		ref->chapter[ref->chapterX].r[on] = value;
-		ref->chapterX += append;
+		ref->chapter[ref->chapterLength].r[on] = value;
+		ref->chapterLength += append;
 	} else if (currentlyOn == 2) {
-		ref->verse[ref->verseX].r[on] = value;
-		ref->verseX += append;
+		ref->verse[ref->verseLength].r[on] = value;
+		ref->verseLength += append;
 	}
 }
 
@@ -84,9 +81,7 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 // int *error;
 // struct Reference ref;
 // parseReference(error, "1 John 3 16-17, 20, 17-18", &ref)
-void parseReference(int *error, char *string, struct Reference *ref) {
-	int length = strlen(string);
-
+void parseReference(int *error, char *string, int length, struct Reference *ref) {
 	// 2D Array for efficient interpreting
 	struct Read read[20];
 	int readX = 0;
@@ -103,7 +98,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			lastType = type;
 			continue;
 		}
-		
+
 	  	// Jump to next part in read
 		if (type != lastType && c != 0) {
 			read[readY].text[readX] = '\0';
@@ -134,8 +129,8 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 	}
 
 	// Now, start interpreting
-	ref->chapterX = 0;
-	ref->verseX = 0;
+	ref->chapterLength = 0;
+	ref->verseLength = 0;
 	ref->book[0] = '\0';
 
 	int currentlyOn = 0;
@@ -152,7 +147,7 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 		tryInt = strspt(read[p].text, tryString, read[p].length);
 
 		// If chapter added and not jumping, then set verse
-		if (ref->chapterX >= 1 && jumping == 0) {
+		if (ref->chapterLength >= 1 && jumping == 0) {
 			currentlyOn = 2;
 		}
 
@@ -216,10 +211,10 @@ void parseReference(int *error, char *string, struct Reference *ref) {
 			setInt(ref, 1, currentlyOn, tryInt, 1);
 		}
 	}
-	
+
 	// Reduce 1 because it was incremented on the last part.
 	// This is done for accurate measuring.
-	ref->verseX -= 1;
+	//ref->verseLength -= 1;
 
 	// Null terminate book
 	strcat(ref->book, "\0");

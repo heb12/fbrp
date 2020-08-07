@@ -1,4 +1,5 @@
-#define BOOK_LENGTH 20
+#define BOOK_LENGTH 30
+
 
 struct Reference {
 	char book[BOOK_LENGTH];
@@ -11,7 +12,7 @@ struct Reference {
 		int type;
 		int r[2];
 		int length;
-	}verse[5];
-	int chapterX; // Not used right now
-	int verseX;
+	}verse[10];
+	int chapterLength;
+	int verseLength;
 };
