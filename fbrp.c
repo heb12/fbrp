@@ -95,15 +95,16 @@ struct Reference parseReference(int *error, char *string) {
 	for (int c = 0; string[c] != '\0'; c++) {
 		int type = determineType(string[c]);
 
-		// Set type when on last char
-		if (string[c + 1] == '\0') {
-			read[readY].type = lastType;
-			break;
-		}
-
 		// Skip seperator, but set lastType
 		if (type == SEPERATOR) {
 			lastType = type;
+
+			// Set type when on last char
+			if (string[c + 1] == '\0') {
+				read[readY].type = lastType;
+				continue;
+			}
+
 			continue;
 		}
 
