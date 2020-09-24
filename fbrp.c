@@ -42,14 +42,14 @@ int determineType(char input) {
 		return MULTIPLE;
 	}
 
-	return -1;
+	return SEPERATOR;
 }
 
 // Custom STRTOL like function
 int strspt(char *string, char *result, int limit) {
 	int integer = 0;
 	int resultC = 0;
-	for (int c = 0; c < limit; c++) {
+	for (int c = 0; string[c] != '\0'; c++) {
 		int charType = determineType(string[c]);
 		if (charType == DIGIT) {
 			integer = integer * 10;
@@ -81,24 +81,29 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 // int *error;
 // struct Reference ref;
 // parseReference(error, "1 John 3 16-17, 20, 17-18", &ref)
-void parseReference(int *error, char *string, int length, struct Reference *ref) {
+struct Reference parseReference(int *error, char *string) {
+	struct Reference ref;
+
 	// 2D Array for efficient interpreting
 	struct Read read[20];
+	read[0].length = 0;
 	int readX = 0;
 	int readY = 0;
 
 	int lastType = 0;
 	int partType = 0;
-	read[readY].length = 0;
-	for (int c = 0; c < length; c++) {
+	for (int c = 0; string[c] != '\0'; c++) {
 		int type = determineType(string[c]);
+
+		// Set type when on last char
+		if (string[c + 1] == '\0') {
+			read[readY].type = lastType;
+			break;
+		}
 
 		// Skip seperator, but set lastType
 		if (type == SEPERATOR) {
 			lastType = type;
-			// Somewhat dirty solution to add last part
-			// when last char(s) are seperators
-			if (c == length - 1) {readY++;}
 			continue;
 		}
 
@@ -120,24 +125,21 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 		readX++;
 		read[readY].length++;
 
-		// Break when parsing is done, and add readY
-		// so that it can be used as the length for the reference array
-		if (c == length - 1) {
-			readY++;
-			read[readY].type = 0;
-			break;
-		}
 
 		lastType = type;
 	}
 
+	// readY++ for the last part
+	readY++;
+
 	// Now, start interpreting
-	ref->chapterLength = 0;
-	ref->verseLength = 0;
-	ref->book[0] = '\0';
+	ref.chapterLength = 0;
+	ref.verseLength = 0;
+	ref.book[0] = '\0';
 
 	int currentlyOn = 0;
 	int jumping = 0;
+
 	for (size_t p = 0; p < readY; p++) {
 		// Skip nothing parts (triggered)
 		// if (read[p].length == 0) {
@@ -154,9 +156,10 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 		char tryString[10];
 		int tryInt = -1;
 		tryInt = strspt(read[p].text, tryString, read[p].length);
+		//printf("%s ", read[p].text);
 
 		// If chapter added and not jumping, then set verse
-		if (ref->chapterLength >= 1 && jumping == 0) {
+		if (ref.chapterLength >= 1 && jumping == 0) {
 			currentlyOn = 2;
 		}
 
@@ -167,13 +170,13 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 
 		// if book and str undefined and p == 0 then assume part of book (Ex: [3] John)
 		if (currentlyOn == 0 && *tryString == '\0' && p == 0) {
-			strcat(ref->book, read[p].text);
+			strcat(ref.book, read[p].text);
 			continue;
 		}
 
 		// if book and str valid then assume book
 		if (currentlyOn == 0 && *tryString != '\0') {
-			strcat(ref->book, read[p].text);
+			strcat(ref.book, read[p].text);
 			continue;
 		}
 
@@ -185,7 +188,7 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 
 		// Handle previous set jumps for range/multiple
 		if (jumping == 1) {
-			setInt(ref, 1, currentlyOn, tryInt, 1);
+			setInt(&ref, 1, currentlyOn, tryInt, 1);
 			jumping = 0;
 
 			// Multiples after range
@@ -202,13 +205,13 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 
 		// Check for the next type (range, multiple)
 		if (nextType == RANGE) {
-			setInt(ref, 0, currentlyOn, tryInt, 0);
+			setInt(&ref, 0, currentlyOn, tryInt, 0);
 
 			jumping = 1;
 			continue;
 		} else if (nextType == MULTIPLE) {
-			setInt(ref, 0, currentlyOn, tryInt, 0);
-			setInt(ref, 1, currentlyOn, tryInt, 1);
+			setInt(&ref, 0, currentlyOn, tryInt, 0);
+			setInt(&ref, 1, currentlyOn, tryInt, 1);
 
 			jumping = 2;
 			continue;
@@ -216,15 +219,16 @@ void parseReference(int *error, char *string, int length, struct Reference *ref)
 
 		// Regular non range-multiple digit appending
 		if (tryInt != -1 && jumping == 0) {
-			setInt(ref, 0, currentlyOn, tryInt, 0);
-			setInt(ref, 1, currentlyOn, tryInt, 1);
+			setInt(&ref, 0, currentlyOn, tryInt, 0);
+			setInt(&ref, 1, currentlyOn, tryInt, 1);
 		}
 	}
 
 	// Reduce 1 because it was incremented on the last part.
 	// This is done for accurate measuring.
-	//ref->verseLength -= 1;
+	//ref.verseLength -= 1;
 
 	// Null terminate book
-	strcat(ref->book, "\0");
+	strcat(ref.book, "\0");
+	return ref;
 }

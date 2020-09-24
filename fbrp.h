@@ -1,1 +1,1 @@
-void parseReference(int *error, char *string, int length, struct Reference *ref);
+struct Reference parseReference(int *error, char *string);

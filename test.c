@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "reference.h"
 #include "fbrp.h"
 
@@ -16,14 +17,12 @@ void debugPrint(struct Reference *ref) {
 }
 
 int main() {
-	int *error;
-	struct Reference ref;
+	while (1) {
+		char input[50];
+		fgets(input, 50, stdin);
 
-	char input[50];
-	memset(input, 'a', 50);
-	fgets(input, 50, stdin);
-
-	parseReference(error, input, strlen(input), &ref);
-	printf("%d\n", ref.verseLength);
-	debugPrint(&ref);
+		int *error;
+		struct Reference ref = parseReference(error, input);
+		debugPrint(&ref);
+	}
 }
