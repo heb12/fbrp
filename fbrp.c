@@ -64,8 +64,9 @@ int strspt(char *string, char *result, int limit) {
 	return integer;
 }
 
-// A quick function to set an int to chapter or verse and
-// add 1 to it's counter.
+// A simple function to set an int to chapter or verse and
+// add 1 to it's counter. A complicated use of pointers could have been used, but this
+// is simpler.
 void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
 		ref->chapter[ref->chapterLength].r[on] = value;
@@ -97,14 +98,13 @@ struct Reference parseReference(int *error, char *string) {
 
 		// Skip seperator, but set lastType
 		if (type == SEPERATOR) {
-			lastType = type;
-
 			// Set type when on last char
 			if (string[c + 1] == '\0') {
 				read[readY].type = lastType;
-				continue;
+				read[readY].text[readX] = '\0';
 			}
 
+			lastType = type;
 			continue;
 		}
 
@@ -132,6 +132,14 @@ struct Reference parseReference(int *error, char *string) {
 
 	// readY++ for the last part
 	readY++;
+
+	// for (int i = 0; i < readY; i++) {
+	// 	printf("%s %d\n", read[i].text, read[i].type);
+	// }
+	//
+	// return ref;
+
+
 
 	// Now, start interpreting
 	ref.chapterLength = 0;
