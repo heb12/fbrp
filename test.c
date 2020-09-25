@@ -23,6 +23,6 @@ int main() {
 
 		int *error;
 		struct Reference ref = parseReference(error, input);
-		//debugPrint(&ref);
+		debugPrint(&ref);
 	}
 }

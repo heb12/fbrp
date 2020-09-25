@@ -98,13 +98,13 @@ struct Reference parseReference(int *error, char *string) {
 
 		// Skip seperator, but set lastType
 		if (type == SEPERATOR) {
+			lastType = type;
+
 			// Set type when on last char
 			if (string[c + 1] == '\0') {
-				read[readY].type = lastType;
-				read[readY].text[readX] = '\0';
+				read[readY].type = partType;
 			}
 
-			lastType = type;
 			continue;
 		}
 
@@ -130,16 +130,11 @@ struct Reference parseReference(int *error, char *string) {
 		lastType = type;
 	}
 
+	// Null terminate last part
+	read[readY].text[readX] = '\0';
+
 	// readY++ for the last part
 	readY++;
-
-	// for (int i = 0; i < readY; i++) {
-	// 	printf("%s %d\n", read[i].text, read[i].type);
-	// }
-	//
-	// return ref;
-
-
 
 	// Now, start interpreting
 	ref.chapterLength = 0;
