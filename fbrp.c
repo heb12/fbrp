@@ -132,6 +132,7 @@ struct Reference parseReference(int *error, char *string) {
 
 	// Null terminate last part
 	read[readY].text[readX] = '\0';
+	read[readY].type = partType;
 
 	// readY++ for the last part
 	readY++;
@@ -143,13 +144,12 @@ struct Reference parseReference(int *error, char *string) {
 
 	int currentlyOn = 0;
 	int jumping = 0;
-
 	for (size_t p = 0; p < readY; p++) {
 		// Skip nothing parts (triggered)
 		// if (read[p].length == 0) {
 		// 	continue;
 		// }
-		//printf("-%d-\n", read[p].text[0]);
+		//printf("-%s-\n", read[p].text);
 
 		// Skip range/multiple chars
 		if (read[p].type == RANGE || read[p].type == MULTIPLE) {
@@ -160,7 +160,6 @@ struct Reference parseReference(int *error, char *string) {
 		char tryString[10];
 		int tryInt = -1;
 		tryInt = strspt(read[p].text, tryString, read[p].length);
-		//printf("%s ", read[p].text);
 
 		// If chapter added and not jumping, then set verse
 		if (ref.chapterLength >= 1 && jumping == 0) {
@@ -210,7 +209,7 @@ struct Reference parseReference(int *error, char *string) {
 		// Check for the next type (range, multiple)
 		if (nextType == RANGE) {
 			setInt(&ref, 0, currentlyOn, tryInt, 0);
-
+			
 			jumping = 1;
 			continue;
 		} else if (nextType == MULTIPLE) {

@@ -16,13 +16,12 @@ void debugPrint(struct Reference *ref) {
 	}
 }
 
-int main() {
-	while (1) {
-		char input[50];
-		fgets(input, 50, stdin);
+int main(int argc, char *argv[]) {
+	char *input = "John 3 16";
+	input = argv[1];
 
-		int *error;
-		struct Reference ref = parseReference(error, input);
-		debugPrint(&ref);
-	}
+	int *error;
+	struct Reference ref = parseReference(error, input);
+	debugPrint(&ref);
+	return 0;
 }
