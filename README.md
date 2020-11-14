@@ -1,9 +1,9 @@
-# FBREP
-"Flexible Bible REference Parser"
+# FBRP
+"Flexible Bible Reference Parser"
 ## Features
-* Pure C99
-* No Regex or any string manipulation libraries
-* Small and fast
+* C99
+* No Regex or any other libraries
+* Tiny and fast
 * One C file
 
 ### Can Parse:
@@ -17,4 +17,4 @@ By design, it cannot parse references like:
 "John 3, Hebrews 4"  
 
 ### Testing:
-`gcc test.c fbrp.c && ./a.out`
+`cc test.c fbrp.c && ./a.out`
