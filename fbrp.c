@@ -1,7 +1,7 @@
 #include <string.h>
 #include "reference.h"
 
-// Struct for the reference reader
+// Struct to store read tokens
 struct Read {
 	char text[10];
 	int length;
@@ -18,7 +18,7 @@ enum TYPES {
 };
 
 // Test for a char in a string. Ex: 'c' in "cake"
-int testCharString(char test, char seperators[]) {
+int testCharString(char test, char *seperators) {
 	for (size_t c = 0; seperators[c] != '\0'; c++) {
 		if (seperators[c] == test) {
 			return 1;
@@ -40,9 +40,9 @@ int determineType(char input) {
 		return RANGE;
 	} else if (testCharString(input, ",")) {
 		return MULTIPLE;
+	} else {
+		return SEPERATOR;
 	}
-
-	return SEPERATOR;
 }
 
 // Custom STRTOL like function
@@ -65,8 +65,8 @@ int strspt(char *string, char *result, int limit) {
 }
 
 // A simple function to set an int to chapter or verse and
-// add 1 to it's counter. A complicated use of pointers could have been used, but this
-// is simpler.
+// add 1 to it's counter. A complicated use of pointers could 
+//have been used, but this is simpler.
 void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
 		ref->chapter[ref->chapterLength].r[on] = value;
@@ -78,14 +78,11 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 }
 
 
-// Main parsing function. Ex:
-// int *error;
-// struct Reference ref;
-// parseReference(error, "1 John 3 16-17, 20, 17-18", &ref)
+// Main parsing function.
 struct Reference parseReference(int *error, char *string) {
 	struct Reference ref;
 
-	// 2D Array for efficient interpreting
+	// 2D Array for interpreting
 	struct Read read[20];
 	read[0].length = 0;
 	int readX = 0;
