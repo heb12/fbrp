@@ -1,6 +1,5 @@
 #define BOOK_LENGTH 30
 
-
 struct Reference {
 	char book[BOOK_LENGTH];
 	struct Chapter {

@@ -9,12 +9,12 @@ struct Read {
 };
 
 enum TYPES {
-	DEFAULT = 0,
-	DIGIT = 1,
-	ALPHA = 2,
-	SEPERATOR = 3,
-	RANGE = 4,
-	MULTIPLE = 5
+	DEFAULT,
+	DIGIT,
+	ALPHA,
+	SEPERATOR,
+	RANGE,
+	MULTIPLE
 };
 
 // Test for a char in a string. Ex: 'c' in "cake"
@@ -30,15 +30,15 @@ int testCharString(char test, char *seperators) {
 
 // Test type of a char
 int determineType(char input) {
-	if (testCharString(input, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")) {
+	if ((input >= 'A' && input <= 'Z') || (input >= 'a' && input <= 'z')) {
 		return ALPHA;
-	} else if (testCharString(input, "1234567890")) {
+	} else if (input >= '0' && input <= '9') {
 		return DIGIT;
 	} else if (testCharString(input, "_ :./\n\0")) {
 		return SEPERATOR;
-	} else if (testCharString(input, "-")) {
+	} else if (input == '-') {
 		return RANGE;
-	} else if (testCharString(input, ",")) {
+	} else if (input == ',') {
 		return MULTIPLE;
 	} else {
 		return SEPERATOR;
@@ -46,7 +46,7 @@ int determineType(char input) {
 }
 
 // Custom STRTOL like function
-int strspt(char *string, char *result, int limit) {
+int strspt(char *string, char *result) {
 	int integer = 0;
 	int resultC = 0;
 	for (int c = 0; string[c] != '\0'; c++) {
@@ -66,7 +66,7 @@ int strspt(char *string, char *result, int limit) {
 
 // A simple function to set an int to chapter or verse and
 // add 1 to it's counter. A complicated use of pointers could 
-//have been used, but this is simpler.
+//have been used, but this is overall simpler.
 void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
 		ref->chapter[ref->chapterLength].r[on] = value;
@@ -79,14 +79,14 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 
 
 // Main parsing function.
-struct Reference parseReference(int *error, char *string) {
+struct Reference parseReference(char *string) {
 	struct Reference ref;
 
 	// 2D Array for interpreting
 	struct Read read[20];
 	read[0].length = 0;
-	int readX = 0;
-	int readY = 0;
+	size_t readX = 0;
+	size_t readY = 0;
 
 	int lastType = 0;
 	int partType = 0;
@@ -142,12 +142,6 @@ struct Reference parseReference(int *error, char *string) {
 	int currentlyOn = 0;
 	int jumping = 0;
 	for (size_t p = 0; p < readY; p++) {
-		// Skip nothing parts (triggered)
-		// if (read[p].length == 0) {
-		// 	continue;
-		// }
-		//printf("-%s-\n", read[p].text);
-
 		// Skip range/multiple chars
 		if (read[p].type == RANGE || read[p].type == MULTIPLE) {
 			continue;
@@ -156,7 +150,7 @@ struct Reference parseReference(int *error, char *string) {
 		// Try to parse what could be string, int, or both.
 		char tryString[10];
 		int tryInt = -1;
-		tryInt = strspt(read[p].text, tryString, read[p].length);
+		tryInt = strspt(read[p].text, tryString);
 
 		// If chapter added and not jumping, then set verse
 		if (ref.chapterLength >= 1 && jumping == 0) {

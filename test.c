@@ -18,18 +18,15 @@ void debugPrint(struct Reference *ref) {
 
 void parse(char *text) {
 	puts(text);
-	int *error = 0;
-	struct Reference ref = parseReference(error, text);
-	if (error) {
-		puts("Error on parsing reference:");
-	} else {
-		debugPrint(&ref);
-	}
+	struct Reference ref = parseReference(text);
+	debugPrint(&ref);
+
+	putchar('\n');
 }
 
 int main() {
 	char *ref1 = "John 3 16";
-	char *ref2 = "John 3 16-20, 17, 18";
+	char *ref2 = "John 3 16-20, 17, 18-19";
 	parse(ref1);
 	parse(ref2);
 
