@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "reference.h"
 #include "fbrp.h"
 
 void debugPrint(struct Reference *ref) {
@@ -25,8 +24,8 @@ void parse(char *text) {
 }
 
 int main() {
-	char *ref1 = "John 3 16";
-	char *ref2 = "John 3 16-20, 17, 18-19";
+	char ref1[] = "John 3 16";
+	char ref2[] = "John 3 16-20, 17, 18-19";
 	parse(ref1);
 	parse(ref2);
 

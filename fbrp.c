@@ -1,5 +1,5 @@
 #include <string.h>
-#include "reference.h"
+#include "fbrp.h"
 
 // Struct to store read tokens
 struct Read {
@@ -8,7 +8,7 @@ struct Read {
 	int type;
 };
 
-enum TYPES {
+enum Types {
 	DEFAULT,
 	DIGIT,
 	ALPHA,
@@ -83,7 +83,7 @@ struct Reference parseReference(char *string) {
 	struct Reference ref;
 
 	// 2D Array for interpreting
-	struct Read read[20];
+	struct Read read[MAX_READ];
 	read[0].length = 0;
 	size_t readX = 0;
 	size_t readY = 0;
@@ -148,7 +148,7 @@ struct Reference parseReference(char *string) {
 		}
 
 		// Try to parse what could be string, int, or both.
-		char tryString[10];
+		char tryString[MAX_WORD];
 		int tryInt = -1;
 		tryInt = strspt(read[p].text, tryString);
 
@@ -218,11 +218,6 @@ struct Reference parseReference(char *string) {
 		}
 	}
 
-	// Reduce 1 because it was incremented on the last part.
-	// This is done for accurate measuring.
-	//ref.verseLength -= 1;
-
 	// Null terminate book
-	strcat(ref.book, "\0");
 	return ref;
 }
