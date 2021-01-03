@@ -77,11 +77,8 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 	}
 }
 
-
 // Main parsing function.
-struct Reference parseReference(char *string) {
-	struct Reference ref;
-
+void parseReference(struct Reference *ref, char *string) {
 	// 2D Array for interpreting
 	struct Read read[MAX_READ];
 	read[0].length = 0;
@@ -135,9 +132,9 @@ struct Reference parseReference(char *string) {
 	readY++;
 
 	// Now, start interpreting
-	ref.chapterLength = 0;
-	ref.verseLength = 0;
-	ref.book[0] = '\0';
+	ref->chapterLength = 0;
+	ref->verseLength = 0;
+	ref->book[0] = '\0';
 
 	int currentlyOn = 0;
 	int jumping = 0;
@@ -153,7 +150,7 @@ struct Reference parseReference(char *string) {
 		tryInt = strspt(read[p].text, tryString);
 
 		// If chapter added and not jumping, then set verse
-		if (ref.chapterLength >= 1 && jumping == 0) {
+		if (ref->chapterLength >= 1 && jumping == 0) {
 			currentlyOn = 2;
 		}
 
@@ -164,13 +161,13 @@ struct Reference parseReference(char *string) {
 
 		// if book and str undefined and p == 0 then assume part of book (Ex: [3] John)
 		if (currentlyOn == 0 && *tryString == '\0' && p == 0) {
-			strcat(ref.book, read[p].text);
+			strcat(ref->book, read[p].text);
 			continue;
 		}
 
 		// if book and str valid then assume book
 		if (currentlyOn == 0 && *tryString != '\0') {
-			strcat(ref.book, read[p].text);
+			strcat(ref->book, read[p].text);
 			continue;
 		}
 
@@ -182,7 +179,7 @@ struct Reference parseReference(char *string) {
 
 		// Handle previous set jumps for range/multiple
 		if (jumping == 1) {
-			setInt(&ref, 1, currentlyOn, tryInt, 1);
+			setInt(ref, 1, currentlyOn, tryInt, 1);
 			jumping = 0;
 
 			// Multiples after range
@@ -199,13 +196,13 @@ struct Reference parseReference(char *string) {
 
 		// Check for the next type (range, multiple)
 		if (nextType == RANGE) {
-			setInt(&ref, 0, currentlyOn, tryInt, 0);
+			setInt(ref, 0, currentlyOn, tryInt, 0);
 			
 			jumping = 1;
 			continue;
 		} else if (nextType == MULTIPLE) {
-			setInt(&ref, 0, currentlyOn, tryInt, 0);
-			setInt(&ref, 1, currentlyOn, tryInt, 1);
+			setInt(ref, 0, currentlyOn, tryInt, 0);
+			setInt(ref, 1, currentlyOn, tryInt, 1);
 
 			jumping = 2;
 			continue;
@@ -213,11 +210,8 @@ struct Reference parseReference(char *string) {
 
 		// Regular non range-multiple digit appending
 		if (tryInt != -1 && jumping == 0) {
-			setInt(&ref, 0, currentlyOn, tryInt, 0);
-			setInt(&ref, 1, currentlyOn, tryInt, 1);
+			setInt(ref, 0, currentlyOn, tryInt, 0);
+			setInt(ref, 1, currentlyOn, tryInt, 1);
 		}
 	}
-
-	// Null terminate book
-	return ref;
 }

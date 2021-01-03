@@ -3,6 +3,8 @@
 #include <string.h>
 #include "fbrp.h"
 
+struct Reference ref;
+
 void debugPrint(struct Reference *ref) {
 	printf("Book: %s\n", ref->book);
 
@@ -17,7 +19,7 @@ void debugPrint(struct Reference *ref) {
 
 void parse(char *text) {
 	puts(text);
-	struct Reference ref = parseReference(text);
+	parseReference(&ref, text);
 	debugPrint(&ref);
 
 	putchar('\n');
