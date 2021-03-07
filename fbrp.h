@@ -1,3 +1,6 @@
+#ifndef __FBRP
+#define __FBRP 1
+
 #define BOOK_LENGTH 30
 #define MAX_READ 25
 #define MAX_WORD 20
@@ -19,3 +22,5 @@ struct Reference {
 };
 
 void parseReference(struct Reference *ref, char *string);
+
+#endif
