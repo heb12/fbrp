@@ -81,12 +81,13 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 void parseReference(struct Reference *ref, char *string) {
 	// 2D Array for interpreting
 	struct Read read[MAX_READ];
-	read[0].length = 0;
 	size_t readX = 0;
 	size_t readY = 0;
 
 	int lastType = 0;
 	int partType = 0;
+
+	read[0].length = 0;
 	for (int c = 0; string[c] != '\0'; c++) {
 		int type = determineType(string[c]);
 
@@ -123,7 +124,6 @@ void parseReference(struct Reference *ref, char *string) {
 		}
 		
 		read[readY].length++;
-
 
 		lastType = type;
 	}
