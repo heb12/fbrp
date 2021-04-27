@@ -1,9 +1,8 @@
-#include <string.h>
 #include "fbrp.h"
 
 // Struct to store read tokens
 struct Read {
-	char text[10];
+	char text[MAX_WORD];
 	int length;
 	int type;
 };
@@ -19,7 +18,7 @@ enum Types {
 
 // Test for a char in a string. Ex: 'c' in "cake"
 int testCharString(char test, char *seperators) {
-	for (size_t c = 0; seperators[c] != '\0'; c++) {
+	for (int c = 0; seperators[c] != '\0'; c++) {
 		if (seperators[c] == test) {
 			return 1;
 		}
@@ -64,6 +63,13 @@ int strspt(char *string, char *result) {
 	return integer;
 }
 
+// Simply make a custom function for strcat
+void mstrcat(char *s, char *t) {
+	while(*s++);
+	--s;
+	while((*s++ = *t++));
+}
+
 // A simple function to increment a the next verse or chapter.
 // A complicated use of pointers could have been used,
 // but this is overall simpler.
@@ -81,8 +87,8 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 void parseReference(struct Reference *ref, char *string) {
 	// 2D Array for interpreting
 	struct Read read[MAX_READ];
-	size_t readX = 0;
-	size_t readY = 0;
+	int readX = 0;
+	int readY = 0;
 
 	int lastType = 0;
 	int partType = 0;
@@ -124,7 +130,6 @@ void parseReference(struct Reference *ref, char *string) {
 		}
 		
 		read[readY].length++;
-
 		lastType = type;
 	}
 
@@ -142,7 +147,7 @@ void parseReference(struct Reference *ref, char *string) {
 
 	int currentlyOn = 0;
 	int jumping = 0;
-	for (size_t p = 0; p < readY; p++) {
+	for (int p = 0; p < readY; p++) {
 		// Skip range/multiple chars
 		if (read[p].type == RANGE || read[p].type == MULTIPLE) {
 			continue;
@@ -165,13 +170,13 @@ void parseReference(struct Reference *ref, char *string) {
 
 		// if book and str undefined and p == 0 then assume part of book (Ex: [3] John)
 		if (currentlyOn == 0 && *tryString == '\0' && p == 0) {
-			strcat(ref->book, read[p].text);
+			mstrcat(ref->book, read[p].text);
 			continue;
 		}
 
 		// if book and str valid then assume book
 		if (currentlyOn == 0 && *tryString != '\0') {
-			strcat(ref->book, read[p].text);
+			mstrcat(ref->book, read[p].text);
 			continue;
 		}
 
@@ -201,13 +206,11 @@ void parseReference(struct Reference *ref, char *string) {
 		// Check for the next type (range, multiple)
 		if (nextType == RANGE) {
 			setInt(ref, 0, currentlyOn, tryInt, 0);
-			
 			jumping = 1;
 			continue;
 		} else if (nextType == MULTIPLE) {
 			setInt(ref, 0, currentlyOn, tryInt, 0);
 			setInt(ref, 1, currentlyOn, tryInt, 1);
-
 			jumping = 2;
 			continue;
 		}

@@ -10,15 +10,15 @@ struct Reference {
 	struct Chapter {
 		int type;
 		int r[2];
-		size_t length;
+		int length;
 	}chapter[5];
 	struct Verse {
 		int type;
 		int r[2];
-		size_t length;
+		int length;
 	}verse[10];
-	size_t chapterLength;
-	size_t verseLength;
+	int chapterLength;
+	int verseLength;
 };
 
 void parseReference(struct Reference *ref, char *string);
