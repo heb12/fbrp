@@ -1,21 +1,5 @@
 #include "fbrp.h"
 
-// Struct to store read tokens
-struct Read {
-	char text[MAX_WORD];
-	int length;
-	int type;
-};
-
-enum Types {
-	DEFAULT,
-	DIGIT,
-	ALPHA,
-	SEPERATOR,
-	RANGE,
-	MULTIPLE
-};
-
 // Test for a char in a string. Ex: 'c' in "cake"
 int testCharString(char test, char *seperators) {
 	for (int c = 0; seperators[c] != '\0'; c++) {
@@ -64,6 +48,7 @@ int strspt(char *string, char *result) {
 }
 
 // Simply make a custom function for strcat
+// (for easy embedding programming)
 void mstrcat(char *s, char *t) {
 	while(*s++);
 	--s;
@@ -75,10 +60,10 @@ void mstrcat(char *s, char *t) {
 // but this is overall simpler.
 void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
-		ref->chapter[ref->chapterLength].r[on] = value;
+		ref->chapter[ref->chapterLength].range[on] = value;
 		ref->chapterLength += append;
 	} else if (currentlyOn == 2) {
-		ref->verse[ref->verseLength].r[on] = value;
+		ref->verse[ref->verseLength].range[on] = value;
 		ref->verseLength += append;
 	}
 }
@@ -133,20 +118,19 @@ void parseReference(struct Reference *ref, char *string) {
 		lastType = type;
 	}
 
-	// Null terminate last part
 	read[readY].text[readX] = '\0';
 	read[readY].type = partType;
 
 	// readY++ for the last part
 	readY++;
 
-	// Now, start interpreting
 	ref->chapterLength = 0;
 	ref->verseLength = 0;
 	ref->book[0] = '\0';
 
-	int currentlyOn = 0;
+	// Now, start interpreting
 	int jumping = 0;
+	int currentlyOn = 0;
 	for (int p = 0; p < readY; p++) {
 		// Skip range/multiple chars
 		if (read[p].type == RANGE || read[p].type == MULTIPLE) {

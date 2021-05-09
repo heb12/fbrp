@@ -2,9 +2,9 @@
 "Flexible Bible Reference Parser"
 
 ## Features
-* No standard C headers used
+* No dependencies or standard C headers used
 * Tiny and flexible
-* One C file, one header file, no complex build system needed.
+* One C file, one header file, no complex build system needed
 * C99
 
 ## Can Parse:
@@ -25,5 +25,6 @@ By design, it cannot parse references like:
 Like a compiler, it parses the string into a tokens.  
 Then, it uses that to run through each token and figure out  
 exactly what they all mean.  
+
 There is currently no algorithm specification, but feel free to  
 ask if you need any clarification.
