@@ -1,9 +1,10 @@
 # FBRP
 "Flexible Bible Reference Parser"  
-FBRP is a tiny Bible reference parser written in C99. It parses  
-references like:  
-- "2 Kings 1, 3-5:2-4, 3-6, 1-2"
-Into structures like this:  
+A tiny Bible reference parser written in C99. It parses references like  
+```
+2 Kings 1, 3-5:2-4, 3-6, 1-2
+```
+and parses it into structures like:
 ```
 Book: 2Kings
 Chapter: [1]-[1]
