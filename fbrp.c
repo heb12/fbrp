@@ -48,16 +48,16 @@ int strspt(char *string, char *result) {
 }
 
 // Simply make a custom function for strcat
-// (for easy embedding programming)
+// (in case of no strings.h)
 void mstrcat(char *s, char *t) {
 	while(*s++);
 	--s;
 	while((*s++ = *t++));
 }
 
-// A simple function to increment a the next verse or chapter.
+// Set the range values for chapter or verses
 // A complicated use of pointers could have been used,
-// but this is overall simpler.
+// but this is overall simpler. (and safer?)
 void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
 		ref->chapter[ref->chapterLength].range[on] = value;
@@ -142,24 +142,29 @@ void parseReference(struct Reference *ref, char *string) {
 		int tryInt = -1;
 		tryInt = strspt(read[p].text, tryString);
 
+		// If text encountered after chapter, then continue
+		if (ref->chapterLength > 0 && tryString[0] != '\0') {
+			continue;
+		}
+
 		// If chapter added and not jumping, then set verse
 		if (ref->chapterLength >= 1 && jumping == 0) {
 			currentlyOn = 2;
 		}
 
-		// if book and str undefined and p != 0 then SET chapter
-		if (currentlyOn == 0 && *tryString == '\0' && p != 0) {
+		// if book and str undefined and p != 0 then set chapter
+		if (currentlyOn == 0 && tryString[0] == '\0' && p != 0) {
 			currentlyOn = 1;
 		}
 
 		// if book and str undefined and p == 0 then assume part of book (Ex: [3] John)
-		if (currentlyOn == 0 && *tryString == '\0' && p == 0) {
+		if (currentlyOn == 0 && tryString[0] == '\0' && p == 0) {
 			mstrcat(ref->book, read[p].text);
 			continue;
 		}
 
 		// if book and str valid then assume book
-		if (currentlyOn == 0 && *tryString != '\0') {
+		if (currentlyOn == 0 && tryString[0] != '\0') {
 			mstrcat(ref->book, read[p].text);
 			continue;
 		}

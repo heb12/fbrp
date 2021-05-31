@@ -32,5 +32,6 @@ int main() {
 	parse("8AUW8DQ98DU98SD9W87DUASDJA");
 	parse("AHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHHH!!!");
 	parse("John 3 4294967312"); // == John 3 16 (uint overflow)
+	parse("John 3 v16");
 	return 0;
 }
