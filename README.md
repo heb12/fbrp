@@ -1,16 +1,23 @@
 # FBRP
-"Flexible Bible Reference Parser"
+"Flexible Bible Reference Parser"  
+FBRP is a tiny Bible reference parser written in C99. It parses  
+references like:
+- "2 Kings 1, 3-5:2-4, 3-6, 1-2"
+Into structures like this:
+```
+Book: 2Kings
+Chapter: [1]-[1]
+Chapter: [3]-[5]
+Verse: [2]-[4]
+Verse: [3]-[6]
+Verse: [1]-[2]
+```
+
 
 ## Features
-* No dependencies or standard C headers used
-* Tiny and flexible
+* No dependencies or even standard C headers
 * One C file, one header file, no complex build system needed
-* C99
-
-## Can Parse:
-- "John 3 16"
-- "2 John 3 16-17"
-- "2 Kings 1, 3-5:2-4, 3-6, 1-2"
+* Tiny and flexible
 
 ## Cannot Parse:
 By design, it cannot parse references like:  
@@ -22,7 +29,7 @@ By design, it cannot parse references like:
 `cc test.c fbrp.c && ./a.out`
 
 ## How it works:
-Like a compiler, it parses the string into a tokens.  
+Like a lexer/parser, it parses the string into a tokens.  
 Then, it uses that to run through each token and figure out  
 exactly what they all mean.  
 
