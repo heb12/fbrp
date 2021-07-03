@@ -1,7 +1,23 @@
 #include "fbrp.h"
 
+// Struct to store read tokens
+struct Read {
+	char text[MAX_WORD];
+	int length;
+	int type;
+};
+
+enum Types {
+	DEFAULT,
+	DIGIT,
+	ALPHA,
+	SEPERATOR,
+	RANGE,
+	MULTIPLE
+};
+
 // Test for a char in a string. Ex: 'c' in "cake"
-int testCharString(char test, char *seperators) {
+int testCharString(char test, char seperators[]) {
 	for (int c = 0; seperators[c] != '\0'; c++) {
 		if (seperators[c] == test) {
 			return 1;
@@ -29,26 +45,23 @@ int determineType(char input) {
 }
 
 // Custom STRTOL like function
-int strspt(char *string, char *result) {
+int strspt(char string[], char *result) {
 	int integer = 0;
-	int resultC = 0;
 	for (int c = 0; string[c] != '\0'; c++) {
 		int charType = determineType(string[c]);
 		if (charType == DIGIT) {
 			integer = integer * 10;
 			integer += string[c] - '0';
 		} else if (charType == ALPHA) {
-			result[resultC] = string[c];
-			resultC++;
+			*result = string[c];
+			result++;
 		}
 	}
 
-	result[resultC] = '\0';
+	*result = '\0';
 	return integer;
 }
 
-// Simply make a custom function for strcat
-// (in case of no strings.h)
 void mstrcat(char *s, char *t) {
 	while(*s++);
 	--s;
@@ -58,7 +71,7 @@ void mstrcat(char *s, char *t) {
 // Set the range values for chapter or verses
 // A complicated use of pointers could have been used,
 // but this is overall simpler. (and safer?)
-void setInt(struct Reference *ref, int on, int currentlyOn, int value, int append) {
+void setInt(struct FbrpReference *ref, int on, int currentlyOn, int value, int append) {
 	if (currentlyOn == 1) {
 		ref->chapter[ref->chapterLength].range[on] = value;
 		ref->chapterLength += append;
@@ -69,7 +82,7 @@ void setInt(struct Reference *ref, int on, int currentlyOn, int value, int appen
 }
 
 // Main parsing function.
-void parseReference(struct Reference *ref, char *string) {
+void parseReference(struct FbrpReference *ref, char string[]) {
 	// 2D Array for interpreting
 	struct Read read[MAX_READ];
 	int readX = 0;
@@ -157,7 +170,8 @@ void parseReference(struct Reference *ref, char *string) {
 			currentlyOn = 1;
 		}
 
-		// if book and str undefined and p == 0 then assume part of book (Ex: [3] John)
+		// if book and str undefined and p == 0 then 
+		// assume part of book (Ex: [3] John)
 		if (currentlyOn == 0 && tryString[0] == '\0' && p == 0) {
 			mstrcat(ref->book, read[p].text);
 			continue;

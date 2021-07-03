@@ -1,25 +1,9 @@
-#ifndef __FBRP
-#define __FBRP 1
+#ifndef FBRP_H
+#define FBRP_H
 
 #define BOOK_LENGTH 30
 #define MAX_READ 25
 #define MAX_WORD 20
-
-// Struct to store read tokens
-struct Read {
-	char text[MAX_WORD];
-	int length;
-	int type;
-};
-
-enum Types {
-	DEFAULT,
-	DIGIT,
-	ALPHA,
-	SEPERATOR,
-	RANGE,
-	MULTIPLE
-};
 
 struct Reference {
 	char book[BOOK_LENGTH];
@@ -37,6 +21,11 @@ struct Reference {
 	int verseLength;
 };
 
-void parseReference(struct Reference *ref, char *string);
+// !! Use these instead of the default functions,
+// !! keeping the old ones until everything is fixed.
+#define FbrpReference Reference
+#define fbrp_parse parseReference
+
+void parseReference(struct Reference *ref, char string[]);
 
 #endif

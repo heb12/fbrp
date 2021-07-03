@@ -3,9 +3,9 @@
 #include <string.h>
 #include "fbrp.h"
 
-struct Reference ref;
+struct FbrpReference ref;
 
-void debugPrint(struct Reference *ref) {
+void debugPrint(struct FbrpReference *ref) {
 	printf("Book: %s\n", ref->book);
 
 	for (int c = 0; c < ref->chapterLength; c++) {
@@ -19,7 +19,7 @@ void debugPrint(struct Reference *ref) {
 
 void parse(char *text) {
 	puts(text);
-	parseReference(&ref, text);
+	fbrp_parse(&ref, text);
 	debugPrint(&ref);
 	puts("------");
 }
