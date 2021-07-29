@@ -5,7 +5,7 @@
 #define MAX_READ 25
 #define MAX_WORD 20
 
-struct Reference {
+struct FbrpReference {
 	char book[BOOK_LENGTH];
 	struct Chapter {
 		int type;
@@ -21,11 +21,10 @@ struct Reference {
 	int verseLength;
 };
 
-// !! Use these instead of the default functions,
-// !! keeping the old ones until everything is fixed.
-#define FbrpReference Reference
-#define fbrp_parse parseReference
+// For compatibility
+#define Reference FbrpReference
+#define parseReference fbrp_parse
 
-void parseReference(struct Reference *ref, char string[]);
+void fbrp_parse(struct FbrpReference *ref, char string[]);
 
 #endif

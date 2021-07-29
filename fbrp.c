@@ -82,7 +82,7 @@ void setInt(struct FbrpReference *ref, int on, int currentlyOn, int value, int a
 }
 
 // Main parsing function.
-void parseReference(struct FbrpReference *ref, char string[]) {
+void fbrp_parse(struct FbrpReference *ref, char string[]) {
 	// 2D Array for interpreting
 	struct Read read[MAX_READ];
 	int readX = 0;
