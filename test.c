@@ -25,7 +25,7 @@ void parse(char *text) {
 }
 
 int main() {
-	parse("ABCDEFGHIJKLMNOPQSRTYCUVZ 3 16");
+	parse("1Kgs 1, 3-5:2-4, 3-6, 1-2");
 	parse("John 3 16-20, 17, 18-19");
 	parse("1 John 3-4 16-17-18-19,-,-,-");
 	parse("2983yr92y8392r839");
