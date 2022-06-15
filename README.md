@@ -1,5 +1,5 @@
 # FBRP
-"Flexible Bible Reference Parser"  
+"Fast Bible Reference Parser"  
 A tiny Bible reference parser written in C99. It parses references like  
 ```
 2 Kings 1, 3-5:2-4, 3-6, 1-2
@@ -17,7 +17,6 @@ Verse: [1]-[2]
 ## Features
 * No dependencies or even standard C headers
 * One C file, one header file, no complex build system needed
-* Tiny and flexible
 
 ## Cannot Parse:
 By design, it cannot parse references like:  
