@@ -25,7 +25,7 @@ By design, it cannot parse references like:
 - "John 3 16, KJV"
 
 ## Testing:
-`cc test.c fbrp.c && ./a.out`
+`cc -D TEST fbrp.c && ./a.out`
 
 ## How it works:
 Like a lexer/parser, it parses the string into a tokens.  
